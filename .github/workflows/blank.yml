@@ -19,6 +19,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y ffmpeg python3
+        npm install -g edge-tts-cli
 
     - name: Generate text
       run: |
@@ -39,9 +40,8 @@ jobs:
 История: Рыбак поймал бутылку с письмом из будущего.
 История: В деревне появился кот, который знал имена всех жителей.
  EOF
-         fi
-
-    shuf -n 1 out/text.txt > out/script.txt
+      fi
+       shuf -n 1 out/text.txt > out/script.txt
 
     - name: Озвучка
       run: |
