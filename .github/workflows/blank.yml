@@ -37,8 +37,6 @@ jobs:
       - name: Send
         run: |
           FILE=$(ls out/*.mp4 | head -n 1)
+          curl -F "chat_id=${{ secrets.TELEGRAM_CHAT }}" -F "video=@$FILE" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendVideo"
 
-          curl -F chat_id=${{ secrets.TELEGRAM_CHAT }} \
-               -F video=@$FILE \
-               https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendVideo
 
