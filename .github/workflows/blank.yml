@@ -15,24 +15,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install
+      - name: Install system
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-          npm install -g edge-tts
 
       - name: Create text
         run: |
           mkdir -p out
-          echo "Факт: Вода может кипеть и замерзать одновременно." > out/script.txt
+          echo "Факт: В космосе запах напоминает смесь металла и малины." > out/script.txt
 
       - name: Voice
         run: |
-          edge-tts --voice ru-RU-DmitryNeural --file out/script.txt --write-media out/audio.mp3
+          npx edge-tts --voice ru-RU-DmitryNeural --file out/script.txt --write-media out/audio.mp3
 
       - name: Video
         run: |
-          ffmpeg -y -f lavfi -i color=c=black:s=1080x1920:d=5 -i out/audio.mp3 -shortest out/video.mp4
+          ffmpeg -y -f lavfi -i color=c=black:s=1080x1920:d=7 -i out/audio.mp3 -shortest out/video.mp4
 
       - name: Send
         run: |
