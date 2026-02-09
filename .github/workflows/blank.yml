@@ -15,35 +15,44 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install
+    - name: Install system
       run: |
         sudo apt-get update
         sudo apt-get install -y ffmpeg python3
-        npm install -g edge-tts-cli
+
+    - name: Install edge-tts
+      run: |
+        npm install -g edge-tts
 
     - name: Generate text
       run: |
         mkdir -p out
 
-        https://github.com/topfikdenhik-a11y/auto-video
+        if [ "${{ github.event.inputs.mode }}" = "fact" ]; then
+          cat > out/text.txt << 'EOF'
+Факт: У осьминога три сердца и голубая кровь.
+Факт: Венера вращается в обратную сторону.
+Факт: Мёд не портится тысячи лет.
+Факт: В космосе невозможно заплакать из-за гравитации.
+Факт: Мозг не чувствует боли.
+EOF
+        else
+          cat > out/text.txt << 'EOF'
+История: Однажды мальчик нашёл старый фотоаппарат и увидел на снимках людей, которых не существовало.
+История: В заброшенном доме часы шли только тогда, когда кто-то был рядом.
+История: Рыбак поймал бутылку с письмом из будущего.
+История: В деревне появился кот, который знал имена всех жителей.
+EOF
+        fi
+
         shuf -n 1 out/text.txt > out/script.txt
 
-     - name: Install edge-tts
-  run: |
-     npm install -g edge-tts
-
-     - name: Install edge-tts
-  run: |
-    npm install -g edge-tts
-    
-     - name: Озвучка
-  run: |
-    edge-tts \
-      --voice ru-RU-DmitryNeural \
-      --file out/script.txt \
-      --write-media out/audio.mp3
-
-
+    - name: Озвучка
+      run: |
+        edge-tts \
+          --voice ru-RU-DmitryNeural \
+          --file out/script.txt \
+          --write-media out/audio.mp3
 
     - name: Видео
       run: |
