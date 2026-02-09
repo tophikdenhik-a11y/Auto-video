@@ -28,12 +28,17 @@ jobs:
         https://github.com/topfikdenhik-a11y/auto-video
         shuf -n 1 out/text.txt > out/script.txt
 
-    - name: Озвучка
-      run: |
-        npx edge-tts \
-          --voice ru-RU-DmitryNeural \
-          --text "$(cat out/script.txt)" \
-          --write-media out/audio.mp3
+     - name: Install edge-tts
+  run: |
+     npm install -g edge-tts
+
+     - name: Озвучка
+  run: |
+    edge-tts \
+      --voice ru-RU-DmitryNeural \
+      --file out/script.txt \
+      --write-media out/audio.mp3
+
 
     - name: Видео
       run: |
