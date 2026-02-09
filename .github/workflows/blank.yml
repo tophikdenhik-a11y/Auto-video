@@ -28,13 +28,13 @@ jobs:
         run: |
           edge-tts --voice ru-RU-DmitryNeural --file out/script.txt --write-media out/audio.mp3
 
-      - name: Video
+      - name: Video 
         run: |
           ffmpeg -y -f lavfi -i color=c=black:s=1080x1920:d=7 \
           -i out/audio.mp3 \
           -shortest out/video.mp4
 
-            - name: Send
+      - name: Send
         run: |
           FILE=$(ls out/*.mp4 | head -n 1)
 
