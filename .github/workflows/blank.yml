@@ -34,9 +34,11 @@ jobs:
           -i out/audio.mp3 \
           -shortest out/video.mp4
 
-      - name: Send
+            - name: Send
         run: |
           FILE=$(ls out/*.mp4 | head -n 1)
-          curl -F chat_id=${{ secrets.CHAT_ID }} \
+
+          curl -F chat_id=${{ secrets.TELEGRAM_CHAT }} \
                -F video=@$FILE \
-               https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendVideo
+               https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendVideo
+
