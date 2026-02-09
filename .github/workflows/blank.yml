@@ -18,7 +18,7 @@ jobs:
       run: |
         pip install edge-tts
         sudo apt-get update
-        sudo apt-get install -y ffmpeg
+        sudo apt-get install -y ffmpeg curl
 
     - name: Make audio
       run: |
@@ -31,8 +31,8 @@ jobs:
         -vf "drawtext=text='${{ inputs.text }}':fontcolor=white:fontsize=60:x=(w-text_w)/2:y=(h-text_h)/2" \
         result.mp4
 
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: video
-        path: result.mp4
+    - name: Send to Telegram
+      run: |
+        curl -F chat_id=${{ secrets.TELEGRAM_CHAT }} \
+             -F video=@result.mp4 \
+             https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendVideo
