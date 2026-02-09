@@ -13,61 +13,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Install system
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ffmpeg python3 fonts-dejavu
+      - name: Install
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          npm install -g edge-tts
 
-    - name: Install edge-tts
-      run: |
-        npm install -g edge-tts
+      - name: Create text
+        run: |
+          mkdir -p out
+          echo "Факт: Вода может кипеть и замерзать одновременно." > out/script.txt
 
-    - name: Generate text
-      run: |
-        mkdir -p out
+      - name: Voice
+        run: |
+          edge-tts --voice ru-RU-DmitryNeural --file out/script.txt --write-media out/audio.mp3
 
-        if [ "${{ github.event.inputs.mode }}" = "fact" ]; then
-          cat > out/text.txt << 'EOF'
-Факт: Бамбук может вырасти на 90 сантиметров за сутки.
-Факт: У акул существовали предки старше динозавров.
-Факт: В Антарктиде есть водопад цвета крови.
-Факт: Человеческое тело светится в полной темноте.
-Факт: Бананы — это ягоды, а клубника нет.
-EOF
-        else
-          cat > out/text.txt << 'EOF'
-История: Старый лифт в доме открывался только тем, кто говорил с ним вежливо.
-История: Девочка нашла на пляже ракушку, внутри которой звучало её имя.
-История: В метро появился поезд, который ехал на одну станцию дальше реальности.
-История: Часы на площади начали показывать завтрашний день.
-EOF
-        fi
+      - name: Video
+        run: |
+          ffmpeg -y -f lavfi -i color=c=black:s=1080x1920:d=5 -i out/audio.mp3 -shortest out/video.mp4
 
-        shuf -n 1 out/text.txt > out/script.txt
-
-    - name: Озвучка
-      run: |
-        edge-tts \
-          --voice ru-RU-DmitryNeural \
-          --file out/script.txt \
-          --write-media out/audio.mp3
-
-    - name: Видео
-      run: |
-        TEXT=$(cat out/script.txt)
-
-        ffmpeg -y \
-          -f lavfi -i color=c=black:s=1080x1920:d=7 \
-          -i out/audio.mp3 \
-          -vf "drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:text=${TEXT}:fontcolor=white:fontsize=44:x=40:y=900:box=1:boxcolor=black@0.5" \
-          -shortest out/video.mp4
-
-    - name: Send to Telegram
-      run: |
-        FILE=$(ls out/*.mp4 | head -n 1)
-
-        curl -F chat_id=${{ secrets.CHAT_ID }} \
-             -F video=@$FILE \
-             https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendVideo
+      - name: Send
+        run: |
+          FILE=$(ls out/*.mp4 | head -n 1)
+          curl -F chat_id=${{ secrets.CHAT_ID }} -F video=@$FILE https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendVideo
