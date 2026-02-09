@@ -33,6 +33,7 @@ jobs:
 
     - name: Send to Telegram
       run: |
-        curl -F chat_id=${{ secrets.TELEGRAM_CHAT }} \
-             -F video=@result.mp4 \
-             https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendVideo
+       curl -F chat_id=${{ secrets.CHAT_ID }} \
+         -F video=@output.mp4 \
+         https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendVideo
+
