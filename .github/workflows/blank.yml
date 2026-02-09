@@ -1,0 +1,38 @@
+name: Auto Video
+
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: "Текст для видео"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install
+      run: |
+        pip install edge-tts
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg
+
+    - name: Make audio
+      run: |
+        edge-tts --voice ru-RU-DmitryNeural --text "${{ inputs.text }}" --write-media audio.mp3
+
+    - name: Make video
+      run: |
+        ffmpeg -y -f lavfi -i color=c=black:s=1080x1920:d=8 \
+        -i audio.mp3 -shortest \
+        -vf "drawtext=text='${{ inputs.text }}':fontcolor=white:fontsize=60:x=(w-text_w)/2:y=(h-text_h)/2" \
+        result.mp4
+
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: video
+        path: result.mp4
