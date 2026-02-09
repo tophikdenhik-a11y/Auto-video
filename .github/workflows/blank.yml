@@ -32,12 +32,17 @@ jobs:
   run: |
      npm install -g edge-tts
 
+     - name: Install edge-tts
+  run: |
+    npm install -g edge-tts
+    
      - name: Озвучка
   run: |
     edge-tts \
       --voice ru-RU-DmitryNeural \
       --file out/script.txt \
       --write-media out/audio.mp3
+
 
 
     - name: Видео
