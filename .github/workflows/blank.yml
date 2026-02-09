@@ -18,7 +18,7 @@ jobs:
     - name: Install system
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg python3
+        sudo apt-get install -y ffmpeg python3 fonts-dejavu
 
     - name: Install edge-tts
       run: |
@@ -30,18 +30,18 @@ jobs:
 
         if [ "${{ github.event.inputs.mode }}" = "fact" ]; then
           cat > out/text.txt << 'EOF'
-Факт: У осьминога три сердца и голубая кровь.
-Факт: Венера вращается в обратную сторону.
-Факт: Мёд не портится тысячи лет.
-Факт: В космосе невозможно заплакать из-за гравитации.
-Факт: Мозг не чувствует боли.
+Факт: Бамбук может вырасти на 90 сантиметров за сутки.
+Факт: У акул существовали предки старше динозавров.
+Факт: В Антарктиде есть водопад цвета крови.
+Факт: Человеческое тело светится в полной темноте.
+Факт: Бананы — это ягоды, а клубника нет.
 EOF
         else
           cat > out/text.txt << 'EOF'
-История: Однажды мальчик нашёл старый фотоаппарат и увидел на снимках людей, которых не существовало.
-История: В заброшенном доме часы шли только тогда, когда кто-то был рядом.
-История: Рыбак поймал бутылку с письмом из будущего.
-История: В деревне появился кот, который знал имена всех жителей.
+История: Старый лифт в доме открывался только тем, кто говорил с ним вежливо.
+История: Девочка нашла на пляже ракушку, внутри которой звучало её имя.
+История: В метро появился поезд, который ехал на одну станцию дальше реальности.
+История: Часы на площади начали показывать завтрашний день.
 EOF
         fi
 
@@ -56,10 +56,13 @@ EOF
 
     - name: Видео
       run: |
-        ffmpeg -y -f lavfi -i color=c=black:s=1080x1920:d=6 \
-        -i out/audio.mp3 \
-        -vf "drawtext=text='$(cat out/script.txt)':fontcolor=white:fontsize=48:x=50:y=900" \
-        -shortest out/video.mp4
+        TEXT=$(cat out/script.txt)
+
+        ffmpeg -y \
+          -f lavfi -i color=c=black:s=1080x1920:d=7 \
+          -i out/audio.mp3 \
+          -vf "drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:text=${TEXT}:fontcolor=white:fontsize=44:x=40:y=900:box=1:boxcolor=black@0.5" \
+          -shortest out/video.mp4
 
     - name: Send to Telegram
       run: |
